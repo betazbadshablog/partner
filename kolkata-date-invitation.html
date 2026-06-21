@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>An Invitation to Kolkata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     EDIT-ME ZONE (visual): the four hex values below are the only
+     colors used on the page. Change them here to retheme everything.
+     ============================================================ */
+  :root{
+    --night:        #1C1B33;   /* deep indigo dusk sky        */
+    --cream:        #F6EEE0;   /* postcard paper               */
+    --marigold:     #E08D3C;   /* tram lights / primary accent */
+    --maroon:       #7A2E2E;   /* headings / secondary accent  */
+    --gold:         #C9A227;   /* dividers, fine details       */
+    --tram-green:   #3E6B5C;   /* completed stops               */
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    background: var(--night);
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(246,238,224,0.5) 0, transparent 50%),
+      radial-gradient(1px 1px at 80% 10%, rgba(246,238,224,0.4) 0, transparent 50%),
+      radial-gradient(1px 1px at 60% 30%, rgba(246,238,224,0.35) 0, transparent 50%),
+      radial-gradient(1px 1px at 25% 45%, rgba(246,238,224,0.3) 0, transparent 50%),
+      radial-gradient(1px 1px at 90% 60%, rgba(246,238,224,0.3) 0, transparent 50%),
+      radial-gradient(1px 1px at 40% 70%, rgba(246,238,224,0.25) 0, transparent 50%);
+    font-family: 'Karla', sans-serif;
+    color: var(--cream);
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 0;
+    position: relative;
+    overflow-x:hidden;
+  }
+
+  .skyline{
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    height: 130px;
+    pointer-events:none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+
+  .stage{
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    z-index: 1;
+    padding-bottom: 140px;
+  }
+
+  h1,h2,h3{
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .eyebrow{
+    font-family:'Karla', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--marigold);
+    font-weight: 700;
+    margin-bottom: 10px;
+    display:block;
+  }
+
+  /* ---------- tram route progress ---------- */
+  .route{
+    display:flex;
+    align-items:center;
+    margin: 4px 0 28px 0;
+    padding: 0 4px;
+  }
+  .route .seg{
+    flex:1;
+    height: 3px;
+    background: rgba(246,238,224,0.18);
+    position:relative;
+    border-radius: 2px;
+  }
+  .route .seg.done{ background: var(--tram-green); }
+  .stop{
+    width: 14px; height:14px;
+    border-radius:50%;
+    background: rgba(246,238,224,0.18);
+    border: 2px solid rgba(246,238,224,0.3);
+    flex-shrink:0;
+    position:relative;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .stop.done{ background: var(--tram-green); border-color: var(--tram-green); }
+  .stop.active{ background: var(--marigold); border-color: var(--marigold); box-shadow: 0 0 0 4px rgba(224,141,60,0.25); }
+  .stop .tram{
+    position:absolute; top:-26px; left:50%; transform:translateX(-50%);
+    font-size: 16px;
+    opacity:0;
+    transition: opacity 0.3s;
+  }
+  .stop.active .tram{ opacity:1; }
+
+  /* ---------- postcard panel ---------- */
+  .panel{
+    background: var(--cream);
+    color: #2B2A33;
+    border-radius: 6px;
+    padding: 32px 28px 28px;
+    position: relative;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    animation: rise 0.45s ease;
+  }
+  @media (prefers-reduced-motion: reduce){ .panel{ animation:none; } }
+  @keyframes rise{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform:none; } }
+
+  .stamp{
+    position:absolute;
+    top: -14px; right: 22px;
+    width: 46px; height: 56px;
+    background: var(--maroon);
+    border: 2px dashed rgba(246,238,224,0.6);
+    color: var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 20px;
+    transform: rotate(4deg);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  .panel p.lede{
+    font-family:'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: #4A4555;
+    margin: 0 0 22px 0;
+  }
+
+  label.field-label{
+    display:block;
+    font-size: 12px;
+    font-weight:700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--maroon);
+    margin-bottom: 10px;
+  }
+
+  input[type="date"], input[type="text"], textarea{
+    width:100%;
+    font-family:'Karla',sans-serif;
+    font-size: 16px;
+    padding: 12px 14px;
+    border: 1.5px solid rgba(122,46,46,0.25);
+    border-radius: 6px;
+    background: #fff;
+    color:#2B2A33;
+    margin-bottom: 6px;
+  }
+  textarea{ min-height: 90px; resize: vertical; font-family:'Karla',sans-serif; }
+  input:focus, textarea:focus, button:focus-visible, .card:focus-visible{
+    outline: 3px solid var(--marigold);
+    outline-offset: 2px;
+  }
+
+  .time-grid, .card-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .card{
+    border: 1.5px solid rgba(122,46,46,0.2);
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor:pointer;
+    font-family:'Karla', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color:#2B2A33;
+    text-align:left;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .card:hover{ border-color: var(--marigold); }
+  .card.selected{
+    border-color: var(--marigold);
+    background: rgba(224,141,60,0.12);
+  }
+  .card .sub{
+    display:block;
+    font-weight:400;
+    font-size: 12px;
+    color:#6b6577;
+    margin-top: 2px;
+  }
+  .card.selected .sub{ color:#7a5a2e; }
+
+  .nav-row{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    margin-top: 24px;
+    gap: 10px;
+  }
+
+  button{
+    font-family:'Karla', sans-serif;
+    font-weight:700;
+    font-size: 14px;
+    border:none;
+    border-radius: 999px;
+    padding: 13px 24px;
+    cursor:pointer;
+    transition: transform 0.1s, opacity 0.15s;
+  }
+  button:active{ transform: scale(0.97); }
+  button:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .btn-primary{ background: var(--marigold); color: var(--night); }
+  .btn-primary:hover:not(:disabled){ filter: brightness(1.07); }
+  .btn-ghost{ background: transparent; color: var(--maroon); padding: 13px 10px; }
+  .btn-ghost:hover{ text-decoration: underline; }
+
+  .skip{
+    background:none; border:none; color:#8a8398; font-size:13px;
+    text-decoration:underline; cursor:pointer; padding:0; margin-top:4px;
+  }
+
+  /* ---------- summary ---------- */
+  .summary-list{ list-style:none; padding:0; margin: 0 0 20px 0; }
+  .summary-list li{
+    display:flex; gap:10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(122,46,46,0.12);
+    font-size: 14px;
+  }
+  .summary-list li:last-child{ border-bottom:none; }
+  .summary-list .icon{ font-size:16px; width: 22px; flex-shrink:0; }
+  .summary-list .val{ font-weight:700; }
+
+  .fallback{
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(122,46,46,0.25);
+  }
+  .fallback p{ font-size:12px; color:#6b6577; margin: 0 0 8px 0; }
+  .fallback textarea{ font-size: 12px; color:#6b6577; background:#fbf7ef; }
+  .copy-btn{ background: var(--night); color: var(--cream); padding: 9px 16px; font-size:12px; }
+
+  .sent-msg{
+    display:none;
+    background: var(--tram-green);
+    color: var(--cream);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .cover-cta{ display:flex; justify-content:center; margin-top: 26px; }
+
+  @media (max-width: 420px){
+    .time-grid, .card-grid{ grid-template-columns: 1fr; }
+    .panel{ padding: 26px 18px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="skyline" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="800" height="130" fill="#13122a"/>
+  <!-- Victoria-Memorial-esque dome -->
+  <circle cx="170" cy="70" r="34" fill="#2a2850"/>
+  <rect x="150" y="68" width="40" height="62" fill="#2a2850"/>
+  <circle cx="170" cy="40" r="6" fill="#2a2850"/>
+  <!-- Howrah-Bridge-esque truss -->
+  <rect x="430" y="40" width="14" height="90" fill="#2a2850"/>
+  <rect x="610" y="40" width="14" height="90" fill="#2a2850"/>
+  <path d="M430 55 L624 55 M430 75 L624 75 M430 95 L624 95 M440 50 L460 95 M480 50 L500 95 M520 50 L540 95 M560 50 L580 95 M600 50 L614 95" stroke="#2a2850" stroke-width="5" fill="none"/>
+  <!-- generic skyline fill -->
+  <rect x="0" y="100" width="800" height="30" fill="#13122a"/>
+  <rect x="40" y="90" width="20" height="40" fill="#1d1c38"/>
+  <rect x="70" y="80" width="18" height="50" fill="#1d1c38"/>
+  <rect x="700" y="85" width="22" height="45" fill="#1d1c38"/>
+  <rect x="740" y="95" width="18" height="35" fill="#1d1c38"/>
+</svg>
+
+<div class="stage">
+
+  <!-- TRAM ROUTE -->
+  <div class="route" id="route" aria-hidden="true"></div>
+
+  <!-- ================= STEP 0 : COVER ================= -->
+  <section class="panel" data-step="cover">
+    <div class="stamp">🪔</div>
+    <span class="eyebrow">A letter, by tram, from Kolkata</span>
+    <h1 id="coverHeading" style="font-size:30px;">Dear <span id="herNameCover"></span>,</h1>
+    <p class="lede" id="coverLede"></p>
+    <p style="font-size:14px; line-height:1.6; color:#4A4555;">
+      Five small questions stand between today and an evening together —
+      when you'll come, what hour suits you, where we'll wander, and what we'll eat.
+      Answer them, and your reply will travel straight back to me.
+    </p>
+    <div class="cover-cta">
+      <button class="btn-primary" onclick="goTo(1)">Begin the journey →</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 1 : DATE ================= -->
+  <section class="panel" data-step="1" style="display:none;">
+    <div class="stamp">📅</div>
+    <span class="eyebrow">Stop 1 of 5 · The Date</span>
+    <h2>When can you come to <span id="cityLabel1"></span>?</h2>
+    <p class="lede">Pick whichever day finds you free.</p>
+    <label class="field-label" for="dateInput">Your date</label>
+    <input type="date" id="dateInput" />
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goTo(0)">← Back</button>
+      <button class="btn-primary" id="dateNext" onclick="goTo(2)" disabled>Next stop →</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 2 : TIME ================= -->
+  <section class="panel" data-step="2" style="display:none;">
+    <div class="stamp">🕰️</div>
+    <span class="eyebrow">Stop 2 of 5 · The Hour</span>
+    <h2>What hour, this evening, finds us together?</h2>
+    <p class="lede">Choose an hour, or set your own.</p>
+    <div class="time-grid" id="timeGrid"></div>
+    <label class="field-label" style="margin-top:10px;" for="timeCustom">Or name your own hour</label>
+    <input type="text" id="timeCustom" placeholder="e.g. 6:30 PM" oninput="onCustomTime()" />
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goTo(1)">← Back</button>
+      <button class="btn-primary" id="timeNext" onclick="goTo(3)" disabled>Next stop →</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 3 : PLACES ================= -->
+  <section class="panel" data-step="3" style="display:none;">
+    <div class="stamp">📍</div>
+    <span class="eyebrow">Stop 3 of 5 · The Wandering</span>
+    <h2>Where shall we wander?</h2>
+    <p class="lede">Pick as many as you like.</p>
+    <div class="card-grid" id="placeGrid"></div>
+    <label class="field-label" style="margin-top:10px;" for="placeCustom">Somewhere else in mind?</label>
+    <input type="text" id="placeCustom" placeholder="Name a place" oninput="onCustomPlace()" />
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goTo(2)">← Back</button>
+      <button class="btn-primary" id="placeNext" onclick="goTo(4)" disabled>Next stop →</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 4 : FOOD ================= -->
+  <section class="panel" data-step="4" style="display:none;">
+    <div class="stamp">🍽️</div>
+    <span class="eyebrow">Stop 4 of 5 · The Feast</span>
+    <h2>And what shall we eat?</h2>
+    <p class="lede">One choice, for now — the menu can always wait for us.</p>
+    <div class="card-grid" id="foodGrid"></div>
+    <label class="field-label" style="margin-top:10px;" for="foodCustom">Craving something else?</label>
+    <input type="text" id="foodCustom" placeholder="Name a craving" oninput="onCustomFood()" />
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goTo(3)">← Back</button>
+      <button class="btn-primary" id="foodNext" onclick="goTo(5)" disabled>Next stop →</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 5 : NOTE ================= -->
+  <section class="panel" data-step="5" style="display:none;">
+    <div class="stamp">💌</div>
+    <span class="eyebrow">Stop 5 of 5 · A Note</span>
+    <h2>Anything you'd like to add?</h2>
+    <p class="lede">Optional — a line for me, if you'd like.</p>
+    <textarea id="noteInput" placeholder="Write a little something..."></textarea>
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goTo(4)">← Back</button>
+      <button class="btn-primary" onclick="goTo('summary')">Review my reply →</button>
+    </div>
+  </section>
+
+  <!-- ================= SUMMARY / SEND ================= -->
+  <section class="panel" data-step="summary" style="display:none;">
+    <div class="stamp">🚋</div>
+    <span class="eyebrow">Arrival · Your Reply</span>
+    <h2>Here's what travels back to <span id="hisNameSummary"></span></h2>
+    <ul class="summary-list" id="summaryList"></ul>
+    <button class="btn-primary" style="width:100%;" onclick="sendReply()">Send my reply ✉️</button>
+    <div class="sent-msg" id="sentMsg">Your mail app should now be open with this reply addressed and ready — just press send there.</div>
+
+    <div class="fallback">
+      <p>If your email app doesn't open on its own, copy this and send it to <strong id="hisEmailFallback"></strong> instead:</p>
+      <textarea id="fallbackText" readonly></textarea>
+      <button class="copy-btn" onclick="copyFallback()">Copy text</button>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-ghost" onclick="goTo(5)">← Back</button>
+      <span></span>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ============================================================
+     EDIT-ME ZONE (content): change these four values, and the
+     lists below, before you host this page and send the link.
+     ============================================================ */
+  const CONFIG = {
+    hisName:  "Your Name",          // <-- put your own name here
+    herName:  "Her Name",           // <-- put your partner's name here
+    hisEmail: "you@example.com",    // <-- replies will open addressed to this email
+    city:     "Kolkata"
+  };
+
+  const PLACES = [
+    { label: "Victoria Memorial", sub: "lit up at dusk" },
+    { label: "Princep Ghat", sub: "by the river" },
+    { label: "Park Street", sub: "lights and old cafés" },
+    { label: "Eco Park", sub: "lakes and lanterns" },
+    { label: "Indian Museum", sub: "for the curious" },
+    { label: "South City rooftop", sub: "skyline views" },
+  ];
+
+  const FOODS = [
+    { label: "Bengali thali", sub: "the classic spread" },
+    { label: "Mughlai & biryani", sub: "rich and slow-cooked" },
+    { label: "Tangra Chinese", sub: "Kolkata's own Chinatown" },
+    { label: "Café & continental", sub: "something quieter" },
+    { label: "Street food", sub: "phuchka, rolls, jhalmuri" },
+  ];
+
+  const TIMES = ["5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM"];
+
+  /* ============================================================
+     Below this line is the page logic — no need to edit further.
+     ============================================================ */
+  const state = { date:"", time:"", places:[], customPlace:"", food:"", customFood:"", note:"" };
+  const STEPS = ["cover", 1, 2, 3, 4, 5, "summary"];
+  let stepIndex = 0;
+
+  document.getElementById("herNameCover").textContent = CONFIG.herName;
+  document.getElementById("coverLede").textContent = `A letter has traveled from ${CONFIG.city} to find you.`;
+  document.getElementById("cityLabel1").textContent = CONFIG.city;
+  document.getElementById("hisNameSummary").textContent = CONFIG.hisName;
+  document.getElementById("hisEmailFallback").textContent = CONFIG.hisEmail;
+
+  // build the tram route (5 stops)
+  const route = document.getElementById("route");
+  for (let i = 1; i <= 5; i++){
+    if (i > 1){
+      const seg = document.createElement("div");
+      seg.className = "seg";
+      seg.dataset.seg = i - 1;
+      route.appendChild(seg);
+    }
+    const stop = document.createElement("div");
+    stop.className = "stop";
+    stop.dataset.stop = i;
+    stop.innerHTML = '<span class="tram">🚋</span>';
+    route.appendChild(stop);
+  }
+
+  function renderRoute(){
+    const idx = STEPS.indexOf(stepIndex);
+    for (let i = 1; i <= 5; i++){
+      const stop = route.querySelector('[data-stop="'+i+'"]');
+      stop.classList.remove("done","active");
+      if (typeof stepIndex === "number" && i < stepIndex) stop.classList.add("done");
+      else if (stepIndex === i) stop.classList.add("active");
+      else if (stepIndex === "summary") stop.classList.add("done");
+    }
+    for (let i = 1; i < 5; i++){
+      const seg = route.querySelector('[data-seg="'+i+'"]');
+      const complete = (typeof stepIndex === "number" && stepIndex > i) || stepIndex === "summary";
+      seg.classList.toggle("done", complete);
+    }
+  }
+
+  function goTo(step){
+    document.querySelectorAll(".panel").forEach(p => p.style.display = "none");
+    document.querySelector('[data-step="'+step+'"]').style.display = "block";
+    stepIndex = step;
+    renderRoute();
+    if (step === "summary") buildSummary();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ---------- Step 1: date ----------
+  document.getElementById("dateInput").addEventListener("change", e => {
+    state.date = e.target.value;
+    document.getElementById("dateNext").disabled = !state.date;
+  });
+
+  // ---------- Step 2: time ----------
+  const timeGrid = document.getElementById("timeGrid");
+  TIMES.forEach(t => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "card";
+    card.textContent = t;
+    card.onclick = () => {
+      state.time = t;
+      document.getElementById("timeCustom").value = "";
+      timeGrid.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      document.getElementById("timeNext").disabled = false;
+    };
+    timeGrid.appendChild(card);
+  });
+  function onCustomTime(){
+    const v = document.getElementById("timeCustom").value.trim();
+    state.time = v;
+    timeGrid.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+    document.getElementById("timeNext").disabled = !v;
+  }
+
+  // ---------- Step 3: places ----------
+  const placeGrid = document.getElementById("placeGrid");
+  PLACES.forEach(p => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "card";
+    card.innerHTML = p.label + '<span class="sub">' + p.sub + '</span>';
+    card.onclick = () => {
+      card.classList.toggle("selected");
+      if (card.classList.contains("selected")) state.places.push(p.label);
+      else state.places = state.places.filter(x => x !== p.label);
+      updatePlaceNext();
+    };
+    placeGrid.appendChild(card);
+  });
+  function onCustomPlace(){
+    state.customPlace = document.getElementById("placeCustom").value.trim();
+    updatePlaceNext();
+  }
+  function updatePlaceNext(){
+    document.getElementById("placeNext").disabled = !(state.places.length || state.customPlace);
+  }
+
+  // ---------- Step 4: food ----------
+  const foodGrid = document.getElementById("foodGrid");
+  FOODS.forEach(f => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "card";
+    card.innerHTML = f.label + '<span class="sub">' + f.sub + '</span>';
+    card.onclick = () => {
+      state.food = f.label;
+      document.getElementById("foodCustom").value = "";
+      foodGrid.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      document.getElementById("foodNext").disabled = false;
+    };
+    foodGrid.appendChild(card);
+  });
+  function onCustomFood(){
+    const v = document.getElementById("foodCustom").value.trim();
+    state.food = v;
+    state.customFood = v;
+    foodGrid.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+    document.getElementById("foodNext").disabled = !v;
+  }
+
+  // ---------- Step 5: note ----------
+  document.getElementById("noteInput").addEventListener("input", e => { state.note = e.target.value; });
+
+  // ---------- Summary ----------
+  function formatDate(iso){
+    if (!iso) return "—";
+    const d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  }
+
+  function buildSummary(){
+    const allPlaces = state.places.concat(state.customPlace ? [state.customPlace] : []);
+    const list = document.getElementById("summaryList");
+    list.innerHTML = "";
+    const rows = [
+      ["📅", "Date", formatDate(state.date)],
+      ["🕰️", "Time", state.time || "—"],
+      ["📍", "Places", allPlaces.length ? allPlaces.join(", ") : "—"],
+      ["🍽️", "Food", state.food || "—"],
+      ["💌", "Note", state.note ? state.note : "—"],
+    ];
+    rows.forEach(([icon, label, val]) => {
+      const li = document.createElement("li");
+      li.innerHTML = '<span class="icon">'+icon+'</span><span>'+label+': <span class="val">'+escapeHtml(val)+'</span></span>';
+      list.appendChild(li);
+    });
+    document.getElementById("fallbackText").value = buildBody();
+  }
+
+  function escapeHtml(s){
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function buildBody(){
+    const allPlaces = state.places.concat(state.customPlace ? [state.customPlace] : []);
+    return [
+      `A reply has arrived from ${CONFIG.herName} 💌`,
+      ``,
+      `📅 Date: ${formatDate(state.date)}`,
+      `🕰️ Time: ${state.time || "—"}`,
+      `📍 Places in ${CONFIG.city}: ${allPlaces.length ? allPlaces.join(", ") : "—"}`,
+      `🍽️ Food: ${state.food || "—"}`,
+      `💌 Note: ${state.note || "—"}`,
+      ``,
+      `Can't wait.`,
+    ].join("\n");
+  }
+
+  function sendReply(){
+    const subject = encodeURIComponent(`My answer — our evening in ${CONFIG.city} 💌`);
+    const body = encodeURIComponent(buildBody());
+    window.location.href = `mailto:${CONFIG.hisEmail}?subject=${subject}&body=${body}`;
+    document.getElementById("sentMsg").style.display = "block";
+  }
+
+  function copyFallback(){
+    const ta = document.getElementById("fallbackText");
+    ta.select();
+    document.execCommand("copy");
+    const btn = document.querySelector(".copy-btn");
+    const original = btn.textContent;
+    btn.textContent = "Copied ✓";
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  }
+
+  renderRoute();
+</script>
+
+</body>
+</html>
